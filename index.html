@@ -198,31 +198,4 @@
         document.addEventListener('DOMContentLoaded', function() {
             updateProgress('audio1', 'progress1');
             updateProgress('audio2', 'progress2');
-            updateProgress('audio3', 'progress3');
-        });
-
-        async function fetchExcelFile() {
-            const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`, {
-                headers: {
-                    'Authorization': `token ${token}`,
-                    'Accept': 'application/vnd.github.v3.raw'
-                }
-            });
-            const content = await response.arrayBuffer();
-            return content;
-        }
-
-        async function uploadExcelFile(content, sha) {
-            const base64Content = btoa(
-                new Uint8Array(content)
-                    .reduce((data, byte) => data + String.fromCharCode(byte), '')
-            );
-
-            const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `token ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    message: 'Update result.xlsx with new data
+            update
