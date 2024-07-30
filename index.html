@@ -63,7 +63,7 @@
 
     <div class="audio-container">
         <h3>录音 1</h3>
-        <audio id="audio1">
+        <audio id="audio1" preload="auto">
             <source src="audio1.mp3" type="audio/mpeg">
             您的浏览器不支持 audio 元素。
         </audio>
@@ -89,7 +89,7 @@
 
     <div class="audio-container">
         <h3>录音 2</h3>
-        <audio id="audio2">
+        <audio id="audio2" preload="auto">
             <source src="audio2.mp3" type="audio/mpeg">
             您的浏览器不支持 audio 元素。
         </audio>
@@ -115,7 +115,7 @@
 
     <div class="audio-container">
         <h3>录音 3</h3>
-        <audio id="audio3">
+        <audio id="audio3" preload="auto">
             <source src="audio3.mp3" type="audio/mpeg">
             您的浏览器不支持 audio 元素。
         </audio>
@@ -155,7 +155,9 @@
 
         function playAudio(audioId) {
             var audio = document.getElementById(audioId);
-            audio.play();
+            audio.play().catch(function(error) {
+                console.error('Audio play failed:', error);
+            });
         }
 
         function setVolume(audioId, volume) {
@@ -202,32 +204,4 @@
 
         async function uploadExcelFile(content, sha) {
             const base64Content = btoa(
-                new Uint8Array(content)
-                    .reduce((data, byte) => data + String.fromCharCode(byte), '')
-            );
-
-            const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `token ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    message: 'Update result.xlsx with new data',
-                    content: base64Content,
-                    sha: sha
-                })
-            });
-
-            return response.json();
-        }
-
-        async function submitData() {
-            var option1 = document.querySelector('input[name="option1"]:checked').value;
-            var option2 = document.querySelector('input[name="option2"]:checked').value;
-            var option3 = document.querySelector('input[name="option3"]:checked').value;
-            var username = document.getElementById('username').value;
-
-            // Load existing Excel file
-            const content = await fetchExcelFile();
-            const workbook =
+                new Uint8
