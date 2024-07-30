@@ -203,6 +203,9 @@
             // Insert new data
             XLSX.utils.sheet_add_aoa(worksheet, [[username, option1, option2, option3]], {origin: -1});
 
+            // Update the worksheet reference range
+            worksheet['!ref'] = XLSX.utils.encode_range(range.s, { r: newRow, c: range.e.c });
+
             // Save updated Excel file
             XLSX.writeFile(workbook, 'result.xlsx');
         }
