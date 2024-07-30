@@ -14,6 +14,9 @@
         button {
             display: inline-block;
             margin-top: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
         }
         .progress-bar {
             width: 100%;
@@ -30,15 +33,33 @@
             width: 0%;
             border-radius: 5px;
         }
-        .time {
-            margin-top: 5px;
-        }
         .volume-control {
             margin-top: 10px;
+        }
+        .header-text {
+            margin: 20px;
+            text-align: center;
+            font-size: 1.5em;
+        }
+        .play-icon {
+            width: 24px;
+            height: 24px;
+        }
+        .options {
+            margin-top: 10px;
+        }
+        .submit-container {
+            text-align: center;
+            margin: 20px;
         }
     </style>
 </head>
 <body>
+
+    <div class="header-text">
+        <p>以下单词里有无促音？</p>
+        <p>以下の単語には促音がありますか？</p>
+    </div>
 
     <div class="audio-container">
         <h3>录音 1</h3>
@@ -46,17 +67,23 @@
             <source src="audio1.mp3" type="audio/mpeg">
             您的浏览器不支持 audio 元素。
         </audio>
-        <button onclick="playAudio('audio1')">播放</button>
-        <button onclick="pauseAudio('audio1')">暂停</button>
+        <button onclick="playAudio('audio1')">
+            <img src="https://img.icons8.com/ios-filled/50/000000/play.png" class="play-icon" alt="播放">
+        </button>
         <div class="progress-bar">
             <div class="progress" id="progress1"></div>
-        </div>
-        <div class="time">
-            <span id="currentTime1">0:00</span> / <span id="duration1">0:00</span>
         </div>
         <div class="volume-control">
             <label for="volume1">音量：</label>
             <input type="range" id="volume1" min="0" max="1" step="0.1" value="1" onchange="setVolume('audio1', this.value)">
+        </div>
+        <div class="options">
+            <label>
+                <input type="radio" name="option1" value="有" onchange="checkOptions()"> 有
+            </label>
+            <label>
+                <input type="radio" name="option1" value="无" onchange="checkOptions()"> 无
+            </label>
         </div>
     </div>
 
@@ -66,17 +93,23 @@
             <source src="audio2.mp3" type="audio/mpeg">
             您的浏览器不支持 audio 元素。
         </audio>
-        <button onclick="playAudio('audio2')">播放</button>
-        <button onclick="pauseAudio('audio2')">暂停</button>
+        <button onclick="playAudio('audio2')">
+            <img src="https://img.icons8.com/ios-filled/50/000000/play.png" class="play-icon" alt="播放">
+        </button>
         <div class="progress-bar">
             <div class="progress" id="progress2"></div>
-        </div>
-        <div class="time">
-            <span id="currentTime2">0:00</span> / <span id="duration2">0:00</span>
         </div>
         <div class="volume-control">
             <label for="volume2">音量：</label>
             <input type="range" id="volume2" min="0" max="1" step="0.1" value="1" onchange="setVolume('audio2', this.value)">
+        </div>
+        <div class="options">
+            <label>
+                <input type="radio" name="option2" value="有" onchange="checkOptions()"> 有
+            </label>
+            <label>
+                <input type="radio" name="option2" value="无" onchange="checkOptions()"> 无
+            </label>
         </div>
     </div>
 
@@ -86,29 +119,38 @@
             <source src="audio3.mp3" type="audio/mpeg">
             您的浏览器不支持 audio 元素。
         </audio>
-        <button onclick="playAudio('audio3')">播放</button>
-        <button onclick="pauseAudio('audio3')">暂停</button>
+        <button onclick="playAudio('audio3')">
+            <img src="https://img.icons8.com/ios-filled/50/000000/play.png" class="play-icon" alt="播放">
+        </button>
         <div class="progress-bar">
             <div class="progress" id="progress3"></div>
-        </div>
-        <div class="time">
-            <span id="currentTime3">0:00</span> / <span id="duration3">0:00</span>
         </div>
         <div class="volume-control">
             <label for="volume3">音量：</label>
             <input type="range" id="volume3" min="0" max="1" step="0.1" value="1" onchange="setVolume('audio3', this.value)">
         </div>
+        <div class="options">
+            <label>
+                <input type="radio" name="option3" value="有" onchange="checkOptions()"> 有
+            </label>
+            <label>
+                <input type="radio" name="option3" value="无" onchange="checkOptions()"> 无
+            </label>
+        </div>
     </div>
 
+    <div class="submit-container">
+        <label for="username">请输入您的名字：</label>
+        <input type="text" id="username" name="username">
+        <br><br>
+        <button id="submit-button" onclick="submitData()" disabled>提交</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
     <script>
         function playAudio(audioId) {
             var audio = document.getElementById(audioId);
             audio.play();
-        }
-
-        function pauseAudio(audioId) {
-            var audio = document.getElementById(audioId);
-            audio.pause();
         }
 
         function setVolume(audioId, volume) {
@@ -116,32 +158,59 @@
             audio.volume = volume;
         }
 
-        function updateProgress(audioId, progressId, currentTimeId, durationId) {
+        function updateProgress(audioId, progressId) {
             var audio = document.getElementById(audioId);
             var progress = document.getElementById(progressId);
-            var currentTime = document.getElementById(currentTimeId);
-            var duration = document.getElementById(durationId);
 
             audio.addEventListener('timeupdate', function() {
                 var percent = (audio.currentTime / audio.duration) * 100;
                 progress.style.width = percent + '%';
-
-                var currentMinutes = Math.floor(audio.currentTime / 60);
-                var currentSeconds = Math.floor(audio.currentTime % 60);
-                if (currentSeconds < 10) { currentSeconds = '0' + currentSeconds; }
-                currentTime.textContent = currentMinutes + ':' + currentSeconds;
-
-                var durationMinutes = Math.floor(audio.duration / 60);
-                var durationSeconds = Math.floor(audio.duration % 60);
-                if (durationSeconds < 10) { durationSeconds = '0' + durationSeconds; }
-                duration.textContent = durationMinutes + ':' + durationSeconds;
             });
         }
 
+        function checkOptions() {
+            var option1 = document.querySelector('input[name="option1"]:checked');
+            var option2 = document.querySelector('input[name="option2"]:checked');
+            var option3 = document.querySelector('input[name="option3"]:checked');
+            var username = document.getElementById('username').value.trim();
+
+            var submitButton = document.getElementById('submit-button');
+            if (option1 && option2 && option3 && username) {
+                submitButton.disabled = false;
+            } else {
+                submitButton.disabled = true;
+            }
+        }
+
+        document.getElementById('username').addEventListener('input', checkOptions);
+
+        async function submitData() {
+            var option1 = document.querySelector('input[name="option1"]:checked').value;
+            var option2 = document.querySelector('input[name="option2"]:checked').value;
+            var option3 = document.querySelector('input[name="option3"]:checked').value;
+            var username = document.getElementById('username').value;
+
+            // Load existing Excel file
+            const response = await fetch('result.xlsx');
+            const arrayBuffer = await response.arrayBuffer();
+            const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+            const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+
+            // Find the next empty row
+            const range = XLSX.utils.decode_range(worksheet['!ref']);
+            const newRow = range.e.r + 1;
+
+            // Insert new data
+            XLSX.utils.sheet_add_aoa(worksheet, [[username, option1, option2, option3]], {origin: -1});
+
+            // Save updated Excel file
+            XLSX.writeFile(workbook, 'result.xlsx');
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
-            updateProgress('audio1', 'progress1', 'currentTime1', 'duration1');
-            updateProgress('audio2', 'progress2', 'currentTime2', 'duration2');
-            updateProgress('audio3', 'progress3', 'currentTime3', 'duration3');
+            updateProgress('audio1', 'progress1');
+            updateProgress('audio2', 'progress2');
+            updateProgress('audio3', 'progress3');
         });
     </script>
 
