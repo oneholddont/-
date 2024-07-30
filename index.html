@@ -64,7 +64,7 @@
     <div class="audio-container">
         <h3>录音 1</h3>
         <audio id="audio1" preload="auto">
-            <source src="audio1.mp3" type="audio/mpeg">
+            <source src="./audio1.mp3" type="audio/mpeg">
             您的浏览器不支持 audio 元素。
         </audio>
         <button onclick="playAudio('audio1')">
@@ -90,7 +90,7 @@
     <div class="audio-container">
         <h3>录音 2</h3>
         <audio id="audio2" preload="auto">
-            <source src="audio2.mp3" type="audio/mpeg">
+            <source src="./audio2.mp3" type="audio/mpeg">
             您的浏览器不支持 audio 元素。
         </audio>
         <button onclick="playAudio('audio2')">
@@ -116,7 +116,7 @@
     <div class="audio-container">
         <h3>录音 3</h3>
         <audio id="audio3" preload="auto">
-            <source src="audio3.mp3" type="audio/mpeg">
+            <source src="./audio3.mp3" type="audio/mpeg">
             您的浏览器不支持 audio 元素。
         </audio>
         <button onclick="playAudio('audio3')">
@@ -204,4 +204,15 @@
 
         async function uploadExcelFile(content, sha) {
             const base64Content = btoa(
-                new Uint8
+                new Uint8Array(content)
+                    .reduce((data, byte) => data + String.fromCharCode(byte), '')
+            );
+
+            const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: 'Update result.xlsx with new data
