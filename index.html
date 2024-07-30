@@ -12,7 +12,28 @@
             border-radius: 5px;
         }
         button {
-            display: block;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        .progress-bar {
+            width: 100%;
+            background-color: #f3f3f3;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 10px;
+            height: 20px;
+            position: relative;
+        }
+        .progress {
+            background-color: #4caf50;
+            height: 100%;
+            width: 0%;
+            border-radius: 5px;
+        }
+        .time {
+            margin-top: 5px;
+        }
+        .volume-control {
             margin-top: 10px;
         }
     </style>
@@ -25,7 +46,18 @@
             <source src="audio1.mp3" type="audio/mpeg">
             您的浏览器不支持 audio 元素。
         </audio>
-        <button onclick="playAudio('audio1')">播放录音 1</button>
+        <button onclick="playAudio('audio1')">播放</button>
+        <button onclick="pauseAudio('audio1')">暂停</button>
+        <div class="progress-bar">
+            <div class="progress" id="progress1"></div>
+        </div>
+        <div class="time">
+            <span id="currentTime1">0:00</span> / <span id="duration1">0:00</span>
+        </div>
+        <div class="volume-control">
+            <label for="volume1">音量：</label>
+            <input type="range" id="volume1" min="0" max="1" step="0.1" value="1" onchange="setVolume('audio1', this.value)">
+        </div>
     </div>
 
     <div class="audio-container">
@@ -34,7 +66,18 @@
             <source src="audio2.mp3" type="audio/mpeg">
             您的浏览器不支持 audio 元素。
         </audio>
-        <button onclick="playAudio('audio2')">播放录音 2</button>
+        <button onclick="playAudio('audio2')">播放</button>
+        <button onclick="pauseAudio('audio2')">暂停</button>
+        <div class="progress-bar">
+            <div class="progress" id="progress2"></div>
+        </div>
+        <div class="time">
+            <span id="currentTime2">0:00</span> / <span id="duration2">0:00</span>
+        </div>
+        <div class="volume-control">
+            <label for="volume2">音量：</label>
+            <input type="range" id="volume2" min="0" max="1" step="0.1" value="1" onchange="setVolume('audio2', this.value)">
+        </div>
     </div>
 
     <div class="audio-container">
@@ -43,7 +86,18 @@
             <source src="audio3.mp3" type="audio/mpeg">
             您的浏览器不支持 audio 元素。
         </audio>
-        <button onclick="playAudio('audio3')">播放录音 3</button>
+        <button onclick="playAudio('audio3')">播放</button>
+        <button onclick="pauseAudio('audio3')">暂停</button>
+        <div class="progress-bar">
+            <div class="progress" id="progress3"></div>
+        </div>
+        <div class="time">
+            <span id="currentTime3">0:00</span> / <span id="duration3">0:00</span>
+        </div>
+        <div class="volume-control">
+            <label for="volume3">音量：</label>
+            <input type="range" id="volume3" min="0" max="1" step="0.1" value="1" onchange="setVolume('audio3', this.value)">
+        </div>
     </div>
 
     <script>
@@ -51,6 +105,44 @@
             var audio = document.getElementById(audioId);
             audio.play();
         }
+
+        function pauseAudio(audioId) {
+            var audio = document.getElementById(audioId);
+            audio.pause();
+        }
+
+        function setVolume(audioId, volume) {
+            var audio = document.getElementById(audioId);
+            audio.volume = volume;
+        }
+
+        function updateProgress(audioId, progressId, currentTimeId, durationId) {
+            var audio = document.getElementById(audioId);
+            var progress = document.getElementById(progressId);
+            var currentTime = document.getElementById(currentTimeId);
+            var duration = document.getElementById(durationId);
+
+            audio.addEventListener('timeupdate', function() {
+                var percent = (audio.currentTime / audio.duration) * 100;
+                progress.style.width = percent + '%';
+
+                var currentMinutes = Math.floor(audio.currentTime / 60);
+                var currentSeconds = Math.floor(audio.currentTime % 60);
+                if (currentSeconds < 10) { currentSeconds = '0' + currentSeconds; }
+                currentTime.textContent = currentMinutes + ':' + currentSeconds;
+
+                var durationMinutes = Math.floor(audio.duration / 60);
+                var durationSeconds = Math.floor(audio.duration % 60);
+                if (durationSeconds < 10) { durationSeconds = '0' + durationSeconds; }
+                duration.textContent = durationMinutes + ':' + durationSeconds;
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            updateProgress('audio1', 'progress1', 'currentTime1', 'duration1');
+            updateProgress('audio2', 'progress2', 'currentTime2', 'duration2');
+            updateProgress('audio3', 'progress3', 'currentTime3', 'duration3');
+        });
     </script>
 
 </body>
